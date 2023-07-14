@@ -8,6 +8,98 @@ import (
 	"strings"
 )
 
+var roman, arabic bool
+
+func RorA(in string) int {
+	out, err := strconv.Atoi(in)
+	if err != nil {
+		if arabic == true {
+			fmt.Println("Не используйте римские и арабские числа вместе", err)
+			os.Exit(1)
+		}
+		roman = true
+		switch in {
+		case "I":
+			return 1
+		case "II":
+			return 2
+		case "III":
+			return 3
+		case "IV":
+			return 4
+		case "V":
+			return 5
+		case "VI":
+			return 6
+		case "VII":
+			return 7
+		case "VIII":
+			return 8
+		case "IX":
+			return 9
+		case "X":
+			return 10
+		default:
+			fmt.Println("Неизвестное число")
+			os.Exit(1)
+		}
+	}
+	if out > 10 || out < 1 {
+		fmt.Println("Вводите числа от 1 до 10")
+		os.Exit(1)
+	}
+	if roman == true {
+		fmt.Println("Не используйте римские и арабские числа вместе", err)
+		os.Exit(1)
+	}
+	arabic = true
+	return out
+}
+
+func ArabicToRoman(arabicnumeral int) string {
+	arabicmap := map[int]string{
+		500: "D",
+		100: "C",
+		50:  "L",
+		10:  "X",
+		5:   "V",
+		1:   "I",
+	}
+	result := ""
+	for num, symbol := range arabicmap {
+		for arabicnumeral >= num {
+			result += symbol
+			arabicnumeral -= num
+		}
+	}
+	return result
+}
+
+func NumOpertion(a int, operand string, b int) string {
+	var result int
+	switch operand {
+	case "+":
+		result = a + b
+	case "-":
+		result = a - b
+	case "*":
+		result = a * b
+	case "/":
+		result = a / b
+	default:
+		fmt.Println("Неизвестная операция")
+		os.Exit(1)
+	}
+	if roman == true && result < 1 {
+		fmt.Println("Римские цифры не могут быть с отрицательным значением")
+		os.Exit(1)
+	}
+	if roman == true {
+		return ArabicToRoman(result)
+	}
+	return strconv.Itoa(result)
+}
+
 func main() {
 	//Ввод строки с пробелами
 	fmt.Print("Введите математическую операцию (+, -, *, /), разделяя операнды и оператор пробелами: ")
@@ -15,6 +107,7 @@ func main() {
 	input, err := reader.ReadString('\n')
 	if err != nil {
 		fmt.Println("Ошибка ввода: ", err)
+		os.Exit(1)
 	}
 	input = strings.TrimSpace(input)
 	fmt.Println(input)
@@ -26,29 +119,6 @@ func main() {
 		return
 	}
 
-	// Преобразуем операнды в числа
-	num1, err1 := strconv.ParseFloat(parts[0], 64)
-	num2, err2 := strconv.ParseFloat(parts[2], 64)
-	if err1 != nil || err2 != nil {
-		fmt.Println("Неверный формат операндов")
-		return
-	}
-
-	// Выполняем операцию
-	var result float64
-	switch parts[1] {
-	case "+":
-		result = num1 + num2
-	case "-":
-		result = num1 - num2
-	case "*":
-		result = num1 * num2
-	case "/":
-		result = num1 / num2
-	default:
-		fmt.Println("Неверный оператор")
-		return
-	}
-
-	fmt.Printf("%.2f %s %.2f = %.2f", num1, parts[1], num2, result)
+	fmt.Println(NumOpertion(RorA(parts[0]), parts[1], RorA(parts[2])))
+	fmt.Printf("%v %v %v = %v", parts[0], parts[1], parts[2], NumOpertion(RorA(parts[0]), parts[1], RorA(parts[2])))
 }
