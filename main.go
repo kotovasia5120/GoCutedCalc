@@ -10,6 +10,7 @@ import (
 
 var roman, arabic bool
 
+// Проверка используемых чисел
 func RorA(in string) int {
 	out, err := strconv.Atoi(in)
 	if err != nil {
@@ -56,6 +57,7 @@ func RorA(in string) int {
 	return out
 }
 
+// Преобразования арабских чисел в римские
 func ArabicToRoman(arabicnumeral int) string {
 	arabicmap := map[int]string{
 		500: "D",
@@ -75,6 +77,7 @@ func ArabicToRoman(arabicnumeral int) string {
 	return result
 }
 
+// Проведение вычислений
 func NumOpertion(a int, operand string, b int) string {
 	var result int
 	switch operand {
@@ -118,7 +121,7 @@ func main() {
 		fmt.Println("Неверный формат операции")
 		return
 	}
-
+	// вызов вычислений и вывод
 	fmt.Println(NumOpertion(RorA(parts[0]), parts[1], RorA(parts[2])))
 	fmt.Printf("%v %v %v = %v", parts[0], parts[1], parts[2], NumOpertion(RorA(parts[0]), parts[1], RorA(parts[2])))
 }
