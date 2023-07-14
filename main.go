@@ -9,13 +9,14 @@ import (
 )
 
 func main() {
-	in := bufio.NewReader(os.Stdin)
-	input, err := in.ReadString('\n')
+	//Ввод строки с пробелами
+	fmt.Print("Введите математическую операцию (+, -, *, /), разделяя операнды и оператор пробелами: ")
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
 	if err != nil {
 		fmt.Println("Ошибка ввода: ", err)
 	}
-	fmt.Print("Введите математическую операцию (+, -, *, /), разделяя операнды и оператор пробелами: ")
-
+	input = strings.TrimSpace(input)
 	fmt.Println(input)
 
 	// Разбиваем строку на операнды и оператор
