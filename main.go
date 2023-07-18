@@ -122,6 +122,5 @@ func main() {
 		return
 	}
 	// вызов вычислений и вывод
-	fmt.Println(NumOpertion(RorA(parts[0]), parts[1], RorA(parts[2])))
 	fmt.Printf("%v %v %v = %v", parts[0], parts[1], parts[2], NumOpertion(RorA(parts[0]), parts[1], RorA(parts[2])))
 }
