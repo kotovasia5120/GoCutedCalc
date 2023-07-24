@@ -58,23 +58,34 @@ func RorA(in string) int {
 }
 
 // Преобразования арабских чисел в римские
-func ArabicToRoman(arabicnumeral int) string {
-	arabicmap := map[int]string{
-		500: "D",
-		100: "C",
-		50:  "L",
-		10:  "X",
-		5:   "V",
-		1:   "I",
+func ArabicToRoman(result int) string {
+	switch {
+	case result < 0:
+		return "в римской системе нет отрицательных чисел."
+	case result > 100:
+		return "Результат больше 100, не подходит под условия задачи"
+	case result == 0:
+		return ""
+	case result < 4:
+		return "I" + ArabicToRoman(result-1)
+	case result == 4:
+		return "IV"
+	case result < 9:
+		return "V" + ArabicToRoman(result-5)
+	case result == 9:
+		return "IX"
+	case result < 40:
+		return "X" + ArabicToRoman(result-10)
+	case result < 50:
+		return "XL" + ArabicToRoman(result-40)
+	case result < 90:
+		return "L" + ArabicToRoman(result-50)
+	case result < 100:
+		return "XC" + ArabicToRoman(result-90)
+	case result == 100:
+		return "C"
 	}
-	result := ""
-	for num, symbol := range arabicmap {
-		for arabicnumeral >= num {
-			result += symbol
-			arabicnumeral -= num
-		}
-	}
-	return result
+	return ""
 }
 
 // Проведение вычислений
