@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"bufio"
 	"fmt"
 	"os"
@@ -15,8 +16,7 @@ func RorA(in string) int {
 	out, err := strconv.Atoi(in)
 	if err != nil {
 		if arabic == true {
-			fmt.Println("Не используйте римские и арабские числа вместе", err)
-			os.Exit(1)
+			errors.New("Не используйте римские и арабские числа вместе")
 		}
 		roman = true
 		switch in {
@@ -41,17 +41,14 @@ func RorA(in string) int {
 		case "X":
 			return 10
 		default:
-			fmt.Println("Неизвестное число")
-			os.Exit(1)
+			errors.New("Неизвестное число")
 		}
 	}
 	if out > 10 || out < 1 {
-		fmt.Println("Вводите числа от 1 до 10")
-		os.Exit(1)
+		errors.New("Вводите числа от 1 до 10")
 	}
 	if roman == true {
-		fmt.Println("Не используйте римские и арабские числа вместе", err)
-		os.Exit(1)
+		errors.New("Не используйте римские и арабские числа вместе")
 	}
 	arabic = true
 	return out
@@ -101,12 +98,10 @@ func NumOpertion(a int, operand string, b int) string {
 	case "/":
 		result = a / b
 	default:
-		fmt.Println("Неизвестная операция")
-		os.Exit(1)
+		errors.New("Неизвестная операция")
 	}
 	if roman == true && result < 1 {
-		fmt.Println("Римские цифры не могут быть с отрицательным значением")
-		os.Exit(1)
+		errors.New("Римские цифры не могут быть с отрицательным значением")
 	}
 	if roman == true {
 		return ArabicToRoman(result)
@@ -120,8 +115,7 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
 	if err != nil {
-		fmt.Println("Ошибка ввода: ", err)
-		os.Exit(1)
+		errors.New("Ошибка ввода: ")
 	}
 	input = strings.TrimSpace(input)
 	fmt.Println(input)
@@ -129,7 +123,7 @@ func main() {
 	// Разбиваем строку на операнды и оператор
 	parts := strings.Split(input, " ")
 	if len(parts) != 3 {
-		fmt.Println("Неверный формат операции")
+		errors.New("Неверный формат операции")
 		return
 	}
 	// вызов вычислений и вывод
