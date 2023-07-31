@@ -1,57 +1,35 @@
 package main
 
 import (
-	"errors"
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
 )
 
-var roman, arabic bool
+var romanian = [11]string{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"}
+
+func showError(errorMessage string) {
+	err := fmt.Errorf(errorMessage)
+	fmt.Println(err)
+}
+
+// Проверка на содержание
+func isContain(el string, list []string) bool {
+	for _, v := range list {
+		if v == el {
+			return true
+		}
+	}
+	return false
+}
 
 // Проверка используемых чисел
-func RorA(in string) int {
-	out, err := strconv.Atoi(in)
-	if err != nil {
-		if arabic == true {
-			errors.New("Не используйте римские и арабские числа вместе")
-		}
-		roman = true
-		switch in {
-		case "I":
-			return 1
-		case "II":
-			return 2
-		case "III":
-			return 3
-		case "IV":
-			return 4
-		case "V":
-			return 5
-		case "VI":
-			return 6
-		case "VII":
-			return 7
-		case "VIII":
-			return 8
-		case "IX":
-			return 9
-		case "X":
-			return 10
-		default:
-			errors.New("Неизвестное число")
-		}
-	}
-	if out > 10 || out < 1 {
-		errors.New("Вводите числа от 1 до 10")
-	}
-	if roman == true {
-		errors.New("Не используйте римские и арабские числа вместе")
-	}
-	arabic = true
-	return out
+func validateNum(num string) bool {
+	nums := [20]string{"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
+	return isContain(num, nums[:])
 }
 
 // Преобразования арабских чисел в римские
@@ -85,47 +63,92 @@ func ArabicToRoman(result int) string {
 	return ""
 }
 
-// Проведение вычислений
-func NumOpertion(a int, operand string, b int) string {
-	var result int
-	switch operand {
-	case "+":
-		result = a + b
-	case "-":
-		result = a - b
-	case "*":
-		result = a * b
-	case "/":
-		result = a / b
-	default:
-		errors.New("Неизвестная операция")
-	}
-	if roman == true && result < 1 {
-		errors.New("Римские цифры не могут быть с отрицательным значением")
-	}
-	if roman == true {
-		return ArabicToRoman(result)
-	}
-	return strconv.Itoa(result)
+// Проверка операции
+func validateOperation(op string) bool {
+	operations := [4]string{"+", "-", "*", "/"}
+	return isContain(op, operations[:])
 }
 
+// Проведение вычислений
+
+func arabicCalc(x int, y int, oper string) int {
+	var res int
+	switch oper {
+	case "+":
+		res = x + y
+	case "-":
+		res = x - y
+
+	case "*":
+		res = x * y
+
+	case "/":
+		res = x / y
+	}
+	return res
+}
+
+func romanianCalc(x string, y string, oper string) string {
+	x_conv := decode(x)
+	y_conv := decode(y)
+	result := arabicCalc(x_conv, y_conv, oper)
+	if result <= 0 {
+		return "Римские числа немогут быть отрицательны."
+	}
+	return ArabicToRoman(result)
+}
+func decode(el string) int {
+	// convert romanian to arabic
+	for i, v := range romanian {
+		if v == el {
+			return i
+		}
+	}
+	return -1
+}
 func main() {
 	//Ввод строки с пробелами
 	fmt.Print("Введите математическую операцию (+, -, *, /), разделяя операнды и оператор пробелами: ")
-	reader := bufio.NewReader(os.Stdin)
-	input, err := reader.ReadString('\n')
+	readerline := bufio.NewReader(os.Stdin)
+	line, err := readerline.ReadString('\n')
 	if err != nil {
 		errors.New("Ошибка ввода: ")
 	}
-	input = strings.TrimSpace(input)
-	fmt.Println(input)
+	parts := strings.Fields(line)
+	fmt.Println(line)
 
-	// Разбиваем строку на операнды и оператор
-	parts := strings.Split(input, " ")
-	if len(parts) != 3 {
-		errors.New("Неверный формат операции")
-		return
+	for {
+		// Разбиваем строку на операнды и оператор
+		if len(parts) != 3 || !validateOperation(parts[1]) {
+			showError("Формат ввода не удовлетворяет заданию — два операнда и один оператор (+, -, /, *).")
+			break
+		} else if !validateNum(parts[0]) || !validateNum(parts[2]) {
+			showError("Только арабские или римские числа от 1 до 10 (I - X)")
+			break
+		} else {
+			// вызов вычислений и вывод
+			num1, num1_err := strconv.Atoi(strings.TrimSpace(parts[0]))
+			operation := strings.TrimSpace(parts[1])
+			num2, num2_err := strconv.Atoi(strings.TrimSpace(parts[2]))
+
+			if num2_err == nil && num1_err == nil {
+				result := arabicCalc(num1, num2, operation)
+				fmt.Println(result)
+				break
+			} else if num2_err != nil && num1_err != nil {
+				result := romanianCalc(parts[0], parts[2], parts[1])
+				if len(result) > 6 {
+					showError(result)
+					break
+				} else {
+					fmt.Println(result)
+					break
+				}
+			} else {
+				showError("Операция между римскими и арабскиими числами невозможна")
+				break
+			}
+		}
 	}
-	// вызов вычислений и вывод
-	fmt.Printf("%v %v %v = %v", parts[0], parts[1], parts[2], NumOpertion(RorA(parts[0]), parts[1], RorA(parts[2])))
+
 }
